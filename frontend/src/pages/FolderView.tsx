@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getDecks, createDeck, getFolders, deleteDeck } from '../api/queries';
+import { getDecks, createDeck, getFolders, deleteDeck, updateDeck } from '../api/queries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus } from 'lucide-react';
@@ -49,6 +49,17 @@ const FolderView: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['decks', folderIdNum] });
     }
   });
+
+  const updateDeckMutation = useMutation({
+    mutationFn: ({ id, title }: { id: number, title: string }) => updateDeck(id, { title }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['decks', folderIdNum] });
+    }
+  });
+
+  const handleUpdateDeckTitle = (id: number, newTitle: string) => {
+    updateDeckMutation.mutate({ id, title: newTitle });
+  };
 
   const handleDeleteDeck = (id: number) => {
     if (window.confirm("Bạn có chắc muốn xóa bài này không?")) {
@@ -100,6 +111,7 @@ const FolderView: React.FC = () => {
                   e.stopPropagation();
                   handleDeleteDeck(deck.id);
                 }}
+                onTitleChange={(newTitle) => handleUpdateDeckTitle(deck.id, newTitle)}
               />
             </div>
           ))}

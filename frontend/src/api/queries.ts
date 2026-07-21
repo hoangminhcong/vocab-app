@@ -20,6 +20,11 @@ export const createDeck = async (folderId: number, title: string, description: s
   return data;
 };
 
+export const updateDeck = async (deckId: number, updateData: any) => {
+  const { data } = await api.put(`/decks/${deckId}`, updateData);
+  return data;
+};
+
 export const getVocabularies = async (deckId: number) => {
   const { data } = await api.get(`/vocabularies/deck/${deckId}`);
   return data;

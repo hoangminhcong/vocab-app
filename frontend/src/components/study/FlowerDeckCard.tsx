@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface FlowerDeckCardProps {
@@ -7,12 +7,39 @@ interface FlowerDeckCardProps {
   onEdit?: (e: React.MouseEvent) => void;
   onStudy?: (e: React.MouseEvent) => void;
   onDelete?: (e: React.MouseEvent) => void;
+  onTitleChange?: (newTitle: string) => void;
   index: number;
 }
 
-export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onEdit, onStudy, onDelete, index }) => {
-  // A deck is a seed if it has 0 words OR if not all words are learned
+export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onEdit, onStudy, onDelete, onTitleChange, index }) => {
   const isSeed = deck.total_words === 0 || (deck.learned_words !== undefined && deck.learned_words < deck.total_words);
+  
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editTitle, setEditTitle] = useState(deck.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditingTitle && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditingTitle]);
+
+  const handleTitleSubmit = () => {
+    setIsEditingTitle(false);
+    if (editTitle.trim() && editTitle !== deck.title && onTitleChange) {
+      onTitleChange(editTitle.trim());
+    } else {
+      setEditTitle(deck.title);
+    }
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleTitleSubmit();
+    if (e.key === 'Escape') {
+      setIsEditingTitle(false);
+      setEditTitle(deck.title);
+    }
+  };
 
   return (
     <motion.div 
@@ -87,9 +114,37 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
       </div>
       
       {/* Title */}
-      <div className="font-extrabold text-[#3c3028] text-sm text-center mt-1 tracking-wide z-10 px-2 line-clamp-2">
-        {deck.title}
-      </div>
+      {isEditingTitle ? (
+        <div className="z-20 mt-1 w-full px-2" onClick={(e) => e.stopPropagation()}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            onBlur={handleTitleSubmit}
+            onKeyDown={handleTitleKeyDown}
+            className="w-full text-center font-extrabold text-[#3c3028] text-sm bg-white border-2 border-[#1cb0f6] rounded-md outline-none px-1"
+          />
+        </div>
+      ) : (
+        <div className="font-extrabold text-[#3c3028] text-sm text-center mt-1 tracking-wide z-10 px-2 line-clamp-2 w-full flex items-center justify-center gap-1 group/title">
+          <span>{deck.title}</span>
+          {onTitleChange && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditingTitle(true);
+              }}
+              className="opacity-0 group-hover/title:opacity-100 text-[#afafaf] hover:text-[#1cb0f6] p-1 rounded transition-opacity"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
