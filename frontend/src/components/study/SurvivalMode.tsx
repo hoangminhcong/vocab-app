@@ -76,7 +76,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
     setFeedback(null);
     isProcessingRef.current = false;
     generateOptions(nextWord);
-    playAudio(nextWord.audio_url);
+    playAudio(nextWord.id.toString());
   };
 
   const generateOptions = (word: any) => {
@@ -86,9 +86,9 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
     setMcqOptions(options);
   };
 
-  const playAudio = (url?: string) => {
-    if (url) {
-      new Audio(`${API_BASE_URL}${url}`).play().catch(e => console.log('Audio error:', e));
+  const playAudio = (id: string) => {
+    if (id) {
+      new Audio(`${API_BASE_URL}/api/vocabularies/${id}/audio`).play().catch(e => console.log('Audio error:', e));
     }
   };
 
@@ -142,7 +142,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
   const handleKeyPress = (e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === 'r') {
       e.preventDefault();
-      playAudio(currentWord?.audio_url);
+      playAudio(currentWord?.id.toString());
     }
 
     if (!isAnswered && !gameOver && !victory && currentWord) {
@@ -303,9 +303,9 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
 
       {/* Floating Action Button (Audio) */}
       <button
-        onClick={() => playAudio(currentWord.audio_url)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center text-[#1cb0f6] hover:bg-gray-50 active:scale-95 transition-all z-10"
-        style={{ border: '2px solid #dce0e3', borderBottom: '4px solid #c4cdd4' }}
+        onClick={() => playAudio(currentWord.id.toString())}
+        className="fixed bottom-8 right-8 w-16 h-16 rounded-full bg-[#1cb0f6] text-white shadow-lg flex items-center justify-center hover:bg-[#1899d6] active:translate-y-1 transition-all z-50 border-b-4 border-[#147eb0]"
+        style={{ boxShadow: '0 4px 15px rgba(28, 176, 246, 0.4)' }}
       >
         <Volume2 size={26} strokeWidth={2.5} />
       </button>

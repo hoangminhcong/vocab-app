@@ -44,7 +44,9 @@ def read_vocabularies_by_deck(
     vocabularies = db.query(VocabularyModel).filter(VocabularyModel.deck_id == deck_id).all()
     return vocabularies
 
-from app.services.tts import generate_and_update_vocab_audio
+from app.services.tts import generate_and_update_vocab_audio, STATIC_AUDIO_DIR, generate_audio_file
+import os
+from fastapi.responses import FileResponse
 
 @router.post("/deck/{deck_id}", response_model=Vocabulary)
 def create_vocabulary(
@@ -137,3 +139,28 @@ def update_vocabulary(
         background_tasks.add_task(generate_and_update_vocab_audio, vocab.id, vocab.english_word)
         
     return vocab
+
+@router.get("/{id}/audio")
+async def get_vocab_audio(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+):
+    vocab = db.query(VocabularyModel).filter(VocabularyModel.id == id).first()
+    if not vocab:
+        raise HTTPException(status_code=404, detail="Vocabulary not found")
+    
+    if vocab.audio_url:
+        filename = vocab.audio_url.split('/')[-1]
+        filepath = os.path.join(STATIC_AUDIO_DIR, filename)
+        if os.path.exists(filepath):
+            return FileResponse(filepath, media_type="audio/mpeg")
+            
+    # If not exists or no audio_url, generate it
+    new_url = await generate_audio_file(vocab.english_word)
+    vocab.audio_url = new_url
+    db.commit()
+    
+    filename = new_url.split('/')[-1]
+    filepath = os.path.join(STATIC_AUDIO_DIR, filename)
+    return FileResponse(filepath, media_type="audio/mpeg")
