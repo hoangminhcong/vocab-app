@@ -4,14 +4,12 @@ import { motion } from 'framer-motion';
 interface FlowerDeckCardProps {
   deck: any;
   onClick: () => void;
-  onEdit?: (e: React.MouseEvent) => void;
-  onStudy?: (e: React.MouseEvent) => void;
   onDelete?: (e: React.MouseEvent) => void;
   onTitleChange?: (newTitle: string) => void;
   index: number;
 }
 
-export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onEdit, onStudy, onDelete, onTitleChange, index }) => {
+export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onDelete, onTitleChange, index }) => {
   const isSeed = deck.total_words === 0 || (deck.learned_words !== undefined && deck.learned_words < deck.total_words);
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);

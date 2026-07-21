@@ -99,14 +99,6 @@ const FolderView: React.FC = () => {
                 deck={deck} 
                 index={index}
                 onClick={() => navigate(`/dashboard/deck/${deck.id}`)}
-                onEdit={(e) => {
-                  e.stopPropagation();
-                  navigate(`/dashboard/deck/${deck.id}`);
-                }}
-                onStudy={(e) => {
-                  e.stopPropagation();
-                  navigate(`/study/${deck.id}`);
-                }}
                 onDelete={(e) => {
                   e.stopPropagation();
                   handleDeleteDeck(deck.id);
