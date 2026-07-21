@@ -294,9 +294,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
                 <span className="font-bold text-[1.15rem]">
                   {opt.vi_meaning} {opt.part_of_speech ? `(${opt.part_of_speech})` : ''}
                 </span>
-                {opt.ipa && (
-                  <span className="text-[0.95rem] font-mono text-[#7a726d] font-bold mt-1 tracking-wide">{opt.ipa}</span>
-                )}
+
               </button>
             );
           })}
