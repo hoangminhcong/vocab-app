@@ -107,7 +107,7 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         ) : (
-          <div className="text-xs font-bold text-[#7a726d]">
+          <div className="text-xs font-bold text-[#7a726d] text-center px-1">
             {deck.learned_words || 0} / {deck.total_words} đã thuộc
           </div>
         )}
