@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     
     # API Keys
     GEMINI_API_KEY: str | None = None
+    SUPABASE_URL: str | None = None
+    SUPABASE_KEY: str | None = None
 
     class Config:
         env_file = ".env"
