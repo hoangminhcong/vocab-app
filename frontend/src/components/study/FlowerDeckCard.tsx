@@ -115,7 +115,7 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
       
       {/* Title */}
       {isEditingTitle ? (
-        <div className="z-20 mt-1 w-full px-2" onClick={(e) => e.stopPropagation()}>
+        <div className="z-20 mt-1 w-full px-2 h-10 flex items-center" onClick={(e) => e.stopPropagation()}>
           <input
             ref={inputRef}
             type="text"
@@ -127,15 +127,15 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
           />
         </div>
       ) : (
-        <div className="font-extrabold text-[#3c3028] text-sm text-center mt-1 tracking-wide z-10 px-2 line-clamp-2 w-full flex items-center justify-center gap-1 group/title">
-          <span>{deck.title}</span>
+        <div className="font-extrabold text-[#3c3028] text-sm text-center mt-1 tracking-wide z-10 px-2 w-full flex items-start justify-center gap-1 h-10 overflow-hidden">
+          <span className="line-clamp-2">{deck.title}</span>
           {onTitleChange && (
             <button 
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditingTitle(true);
               }}
-              className="opacity-0 group-hover/title:opacity-100 text-[#afafaf] hover:text-[#1cb0f6] p-1 rounded transition-opacity"
+              className="text-[#afafaf] hover:text-[#1cb0f6] p-1 rounded transition-colors flex-shrink-0 mt-[-2px]"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
