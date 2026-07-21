@@ -89,10 +89,10 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
     const level = word.study_progress?.level || 0;
 
     if (level === 0) {
-      playAudio(word.id.toString());
+      playAudio(word.audio_url);
     } else if (level === 1 || level === 2) {
       generateMcqOptions(word);
-      if (level === 1) startAudioLoop(word.id.toString());
+      if (level === 1) startAudioLoop(word.audio_url);
     } else if (level === 3) {
       setTimeout(() => typingInputRef.current?.focus(), 100);
     }
@@ -107,20 +107,22 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
     setMcqOptions(options);
   };
 
-  const playAudio = (id?: string) => {
-    if (id) {
+  const playAudio = (url?: string) => {
+    if (url) {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-      const audio = new Audio(`${API_BASE_URL}/api/vocabularies/${id}/audio`);
+      // Audio URL is now a full Supabase URL, or falling back to API
+      const urlToPlay = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+      const audio = new Audio(urlToPlay);
       audioRef.current = audio;
       audio.play().catch(() => { });
     }
   };
 
-  const startAudioLoop = (id?: string) => {
-    playAudio(id);
-    audioIntervalRef.current = setInterval(() => playAudio(id), 4000);
+  const startAudioLoop = (url?: string) => {
+    playAudio(url);
+    audioIntervalRef.current = setInterval(() => playAudio(url), 4000);
   };
 
   const stopAudioLoop = () => {
@@ -230,7 +232,7 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
     }
 
     if (currentWord.study_progress?.level === 2) {
-      playAudio(currentWord.id.toString());
+      playAudio(currentWord.audio_url);
     }
   };
 
@@ -243,7 +245,7 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
     } else {
       handleWrong();
     }
-    playAudio(currentWord.id.toString());
+    playAudio(currentWord.audio_url);
   };
 
   const handleKeyPress = (e: KeyboardEvent) => {
@@ -254,7 +256,7 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
     }
     if (e.ctrlKey && e.key === 'r') {
       e.preventDefault();
-      playAudio(currentWord.id.toString());
+      playAudio(currentWord.audio_url);
     }
 
     // MCQ Hotkeys
@@ -465,7 +467,7 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
 
       {/* Floating Action Button (Audio) */}
       <button
-        onClick={() => playAudio(currentWord.id.toString())}
+        onClick={() => playAudio(currentWord.audio_url)}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center text-[#1cb0f6] hover:bg-gray-50 active:scale-95 transition-all z-10"
         style={{ border: '2px solid #dce0e3', borderBottom: '4px solid #c4cdd4' }}
       >

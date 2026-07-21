@@ -76,7 +76,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
     setFeedback(null);
     isProcessingRef.current = false;
     generateOptions(nextWord);
-    playAudio(nextWord.id.toString());
+    playAudio(nextWord.audio_url);
   };
 
   const generateOptions = (word: any) => {
@@ -86,9 +86,10 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
     setMcqOptions(options);
   };
 
-  const playAudio = (id: string) => {
-    if (id) {
-      new Audio(`${API_BASE_URL}/api/vocabularies/${id}/audio`).play().catch(e => console.log('Audio error:', e));
+  const playAudio = (url: string) => {
+    if (url) {
+      const urlToPlay = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+      new Audio(urlToPlay).play().catch(e => console.log('Audio error:', e));
     }
   };
 
@@ -142,7 +143,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
   const handleKeyPress = (e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === 'r') {
       e.preventDefault();
-      playAudio(currentWord?.id.toString());
+      playAudio(currentWord?.audio_url);
     }
 
     if (!isAnswered && !gameOver && !victory && currentWord) {
@@ -303,7 +304,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
 
       {/* Floating Action Button (Audio) */}
       <button
-        onClick={() => playAudio(currentWord.id.toString())}
+        onClick={() => playAudio(currentWord.audio_url)}
         className="fixed bottom-8 right-8 w-16 h-16 rounded-full bg-[#1cb0f6] text-white shadow-lg flex items-center justify-center hover:bg-[#1899d6] active:translate-y-1 transition-all z-50 border-b-4 border-[#147eb0]"
         style={{ boxShadow: '0 4px 15px rgba(28, 176, 246, 0.4)' }}
       >
