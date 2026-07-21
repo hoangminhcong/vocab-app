@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { API_BASE_URL } from '../../api/axios';
+
 interface SurvivalModeProps {
   allWords: any[];
   onExit: () => void;
@@ -86,7 +88,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
 
   const playAudio = (url?: string) => {
     if (url) {
-      new Audio(`http://localhost:8000${url}`).play().catch(e => console.log('Audio error:', e));
+      new Audio(`${API_BASE_URL}${url}`).play().catch(e => console.log('Audio error:', e));
     }
   };
 

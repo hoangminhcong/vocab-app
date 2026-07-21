@@ -3,6 +3,8 @@ import { Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { submitReview } from '@/api/queries';
 
+import { API_BASE_URL } from '../../api/axios';
+
 interface SrsModeProps {
   allWords: any[];
   onExit: () => void;
@@ -110,7 +112,7 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-      const audio = new Audio(`http://localhost:8000${url}`);
+      const audio = new Audio(`${API_BASE_URL}${url}`);
       audioRef.current = audio;
       audio.play().catch(() => { });
     }
