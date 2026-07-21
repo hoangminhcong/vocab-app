@@ -139,3 +139,32 @@ def update_vocabulary(
         background_tasks.add_task(generate_and_update_vocab_audio, vocab.id, vocab.english_word)
         
     return vocab
+
+from fastapi.responses import RedirectResponse
+
+@router.get("/{id}/audio")
+async def get_vocab_audio(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+):
+    vocab = db.query(VocabularyModel).filter(VocabularyModel.id == id).first()
+    if not vocab:
+        raise HTTPException(status_code=404, detail="Vocabulary not found")
+    
+    if vocab.audio_url and vocab.audio_url.startswith("http"):
+        return RedirectResponse(url=vocab.audio_url)
+            
+    # If not exists or not a supabase url, generate it (which now uploads to Supabase)
+    new_url = await generate_audio_file(vocab.english_word)
+    vocab.audio_url = new_url
+    db.commit()
+    
+    if new_url.startswith("http"):
+        return RedirectResponse(url=new_url)
+    
+    # Fallback to local file if upload failed
+    filename = new_url.split('/')[-1]
+    filepath = os.path.join(STATIC_AUDIO_DIR, filename)
+    from fastapi.responses import FileResponse
+    return FileResponse(filepath, media_type="audio/mpeg")
