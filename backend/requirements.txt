@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+alembic
+pydantic
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+edge-tts
+pandas
+email-validator
+psycopg2-binary
+openpyxl
+google-generativeai 
