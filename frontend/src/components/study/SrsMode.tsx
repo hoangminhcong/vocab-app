@@ -22,7 +22,7 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
   const [totalLearned, setTotalLearned] = useState(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioIntervalRef = useRef<number | null>(null);
   const typingInputRef = useRef<HTMLInputElement>(null);
   const isProcessingRef = useRef(false);
 

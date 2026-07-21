@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Play, ArrowLeft, Plus, Volume2, Camera, Loader2, Trash2 } from 'lucide-react';
+import { Play, ArrowLeft, Plus, Camera, Loader2, Trash2 } from 'lucide-react';
 
 const EditableCell = ({ value, onSave, placeholder, prefix }: { value: string, onSave: (val: string) => void, placeholder?: string, prefix?: React.ReactNode }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -143,12 +143,7 @@ const DeckView: React.FC = () => {
     }
   };
 
-  const playAudio = (url: string | null) => {
-    if (url) {
-      const audio = new Audio(`http://localhost:8000${url}`);
-      audio.play().catch(() => { });
-    }
-  };
+
 
   const handleImageScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

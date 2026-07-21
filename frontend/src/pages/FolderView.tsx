@@ -3,9 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getDecks, createDeck, getFolders, deleteDeck } from '../api/queries';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Plus, Play, Edit3 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { FlowerDeckCard } from '../components/study/FlowerDeckCard';
 const FolderView: React.FC = () => {
   const { folderId } = useParams();

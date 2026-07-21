@@ -20,7 +20,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
   const [gameOver, setGameOver] = useState(false);
   const [victory, setVictory] = useState(false);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const isProcessingRef = useRef(false);
 
