@@ -12,7 +12,9 @@ interface FlowerDeckCardProps {
 export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onDelete, onTitleChange, index }) => {
   const srsPercent = deck.total_words > 0 ? (deck.learned_words || 0) / deck.total_words : 0;
   const survivalWins = deck.survival_wins || 0;
-  const isWithered = deck.next_wither_at && new Date(deck.next_wither_at) < new Date();
+  const nextWitherAt = deck.next_wither_at ? new Date(deck.next_wither_at) : null;
+  const now = new Date();
+  const isWithered = nextWitherAt && nextWitherAt < now;
 
   // Determine stage (0 to 7)
   let stage = 0;
@@ -217,12 +219,29 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
         </div>
       );
     } else {
+      let timeRemaining = "";
+      if (nextWitherAt) {
+        const diffMs = nextWitherAt.getTime() - now.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        if (diffDays > 0) {
+          timeRemaining = `(Héo sau ${diffDays} ngày)`;
+        } else if (diffHours > 0) {
+          timeRemaining = `(Héo sau ${diffHours} giờ)`;
+        } else {
+          timeRemaining = `(Sắp héo)`;
+        }
+      }
+
       return (
-        <div className="text-xs font-bold text-[#7cb42b] text-center px-1 flex items-center justify-center gap-1">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Đã nở
+        <div className="flex flex-col items-center">
+          <div className="text-xs font-bold text-[#7cb42b] text-center px-1 flex items-center justify-center gap-1 mb-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Đã nở
+          </div>
+          {timeRemaining && <div className="text-[10px] text-[#7a726d] font-semibold">{timeRemaining}</div>}
         </div>
       );
     }
@@ -256,7 +275,7 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
           <input
             ref={inputRef}
             type="text"
-            value={editTitle}
+            value={editTitle || ''}
             onChange={(e) => setEditTitle(e.target.value)}
             onBlur={handleTitleSubmit}
             onKeyDown={handleTitleKeyDown}

@@ -3,6 +3,7 @@ import { Volume2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { API_BASE_URL } from '../../api/axios';
+import { recordSurvivalWin } from '../../api/queries';
 
 interface SurvivalModeProps {
   allWords: any[];
@@ -67,9 +68,7 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit, deckId })
     if (currentQueue.length === 0) {
       setVictory(true);
       if (deckId) {
-        import('../../api/queries').then(({ recordSurvivalWin }) => {
-          recordSurvivalWin(deckId).catch(err => console.error("Failed to record win", err));
-        });
+        recordSurvivalWin(deckId).catch(err => console.error("Failed to record win", err));
       }
       return;
     }

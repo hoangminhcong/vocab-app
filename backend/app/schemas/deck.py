@@ -16,9 +16,11 @@ class DeckUpdate(DeckBase):
 class DeckInDBBase(DeckBase):
     id: int
     folder_id: int
-    total_words: int
+    cover_image: Optional[str] = None
+    total_words: int = 0
     learned_words: int = 0
     survival_wins: int = 0
+    wither_stage: int = 0
     next_wither_at: Optional[datetime] = None
     last_reviewed_at: Optional[datetime] = None
     created_at: datetime

@@ -13,6 +13,7 @@ class Deck(Base):
     cover_image = Column(String, nullable=True)
     total_words = Column(Integer, default=0)
     survival_wins = Column(Integer, default=0)
+    wither_stage = Column(Integer, default=0)
     next_wither_at = Column(DateTime(timezone=True), nullable=True)
     last_reviewed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

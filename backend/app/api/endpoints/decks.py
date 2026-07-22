@@ -114,32 +114,54 @@ def record_survival_win(
     current_user: User = Depends(deps.get_current_user)
 ):
     import datetime
+    from app.models.vocabulary import Vocabulary
+    from app.models.study_progress import StudyProgress
     
     deck = db.query(DeckModel).join(FolderModel).filter(DeckModel.id == id, FolderModel.user_id == current_user.id).first()
     if not deck:
         raise HTTPException(status_code=404, detail="Deck not found")
         
-    deck.survival_wins += 1
-    
     now = datetime.datetime.now(datetime.timezone.utc)
     deck.last_reviewed_at = now
     
-    wins = deck.survival_wins
-    if wins == 1:
-        # Not fully bloomed yet.
-        pass
-    elif wins == 2:
-        deck.next_wither_at = now + datetime.timedelta(days=1)
-    elif wins == 3:
-        deck.next_wither_at = now + datetime.timedelta(days=3)
-    elif wins == 4:
-        deck.next_wither_at = now + datetime.timedelta(days=7)
-    elif wins == 5:
-        deck.next_wither_at = now + datetime.timedelta(days=15)
-    else:
-        deck.next_wither_at = now + datetime.timedelta(days=30)
+    learned = db.query(Vocabulary).join(StudyProgress).filter(
+        Vocabulary.deck_id == id,
+        StudyProgress.level >= 4
+    ).count()
+
+    # Only progress flower if SRS is 100% complete
+    if deck.total_words > 0 and learned >= deck.total_words:
+        # Increase wins
+        deck.survival_wins += 1
         
+        # Stage 0: Initial budding phase (needs 2 wins to bloom)
+        if deck.wither_stage == 0:
+            if deck.survival_wins >= 2:
+                deck.wither_stage = 1
+                deck.next_wither_at = now + datetime.timedelta(days=1)
+        # Stages 1-5: Withered phases
+        else:
+            # Check if it was actually withered
+            # If next_wither_at is in the past, they successfully rescued the flower
+            if deck.next_wither_at and now >= deck.next_wither_at:
+                if deck.wither_stage == 1:
+                    deck.wither_stage = 2
+                    deck.next_wither_at = now + datetime.timedelta(days=3)
+                elif deck.wither_stage == 2:
+                    deck.wither_stage = 3
+                    deck.next_wither_at = now + datetime.timedelta(days=7)
+                elif deck.wither_stage == 3:
+                    deck.wither_stage = 4
+                    deck.next_wither_at = now + datetime.timedelta(days=15)
+                elif deck.wither_stage >= 4:
+                    deck.wither_stage = 5
+                    deck.next_wither_at = now + datetime.timedelta(days=30)
+    
+    db.add(deck)
     db.commit()
     db.refresh(deck)
+    
+    # Manually attach learned_words so response_model works
+    deck.learned_words = learned
     
     return deck

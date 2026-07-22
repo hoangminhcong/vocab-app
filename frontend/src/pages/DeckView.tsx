@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Play, ArrowLeft, Plus, Camera, Loader2, Trash2 } from 'lucide-react';
+import { Play, ArrowLeft, Plus, Camera, Loader2, Trash2, Pencil } from 'lucide-react';
 
 const EditableCell = ({ value, onSave, placeholder, prefix }: { value: string, onSave: (val: string) => void, placeholder?: string, prefix?: React.ReactNode }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -43,13 +43,13 @@ const EditableCell = ({ value, onSave, placeholder, prefix }: { value: string, o
   }
 
   return (
-    <div
-      onDoubleClick={() => setIsEditing(true)}
-      className="min-h-[2.5rem] flex items-center px-2 cursor-text hover:bg-black/5 rounded transition-colors whitespace-normal break-words"
-      title="Click đúp để sửa"
+    <div 
+      className="cursor-pointer flex items-center group/cell"
+      onClick={() => setIsEditing(true)}
     >
       {prefix && <span className="mr-1 opacity-70 italic font-normal">{prefix}</span>}
       {value || <span className="text-muted-foreground italic text-xs">{placeholder || 'Trống'}</span>}
+      <Pencil className="w-3 h-3 ml-2 opacity-50 transition-opacity" />
     </div>
   );
 };
@@ -333,7 +333,7 @@ const DeckView: React.FC = () => {
                         <td className="py-3 px-4 text-center shrink-0">
                           <button
                             onClick={() => handleDeleteWord(vocab.id)}
-                            className="text-[#ea2b2b] opacity-50 group-hover:opacity-100 hover:scale-110 transition-all p-2 rounded-full hover:bg-red-50"
+                            className="text-[#ea2b2b] hover:scale-110 transition-all p-2 rounded-full hover:bg-red-50"
                             title="Xóa từ"
                           >
                             <Trash2 className="w-5 h-5" />
