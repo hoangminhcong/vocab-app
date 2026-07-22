@@ -30,6 +30,11 @@ export const getVocabularies = async (deckId: number) => {
   return data;
 };
 
+export const recordSurvivalWin = async (deckId: number) => {
+  const { data } = await api.post(`/decks/${deckId}/survival-win`);
+  return data;
+};
+
 export const getDueVocabularies = async (deckId: number) => {
   const { data } = await api.get(`/study/due/${deckId}`);
   return data;

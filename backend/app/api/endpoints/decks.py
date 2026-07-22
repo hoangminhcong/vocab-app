@@ -105,3 +105,41 @@ def update_deck(
     db.commit()
     db.refresh(deck)
     return deck
+
+@router.post("/{id}/survival-win", response_model=Deck)
+def record_survival_win(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+    current_user: User = Depends(deps.get_current_user)
+):
+    import datetime
+    
+    deck = db.query(DeckModel).join(FolderModel).filter(DeckModel.id == id, FolderModel.user_id == current_user.id).first()
+    if not deck:
+        raise HTTPException(status_code=404, detail="Deck not found")
+        
+    deck.survival_wins += 1
+    
+    now = datetime.datetime.now(datetime.timezone.utc)
+    deck.last_reviewed_at = now
+    
+    wins = deck.survival_wins
+    if wins == 1:
+        # Not fully bloomed yet.
+        pass
+    elif wins == 2:
+        deck.next_wither_at = now + datetime.timedelta(days=1)
+    elif wins == 3:
+        deck.next_wither_at = now + datetime.timedelta(days=3)
+    elif wins == 4:
+        deck.next_wither_at = now + datetime.timedelta(days=7)
+    elif wins == 5:
+        deck.next_wither_at = now + datetime.timedelta(days=15)
+    else:
+        deck.next_wither_at = now + datetime.timedelta(days=30)
+        
+    db.commit()
+    db.refresh(deck)
+    
+    return deck

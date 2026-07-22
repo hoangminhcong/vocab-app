@@ -7,9 +7,10 @@ import { API_BASE_URL } from '../../api/axios';
 interface SurvivalModeProps {
   allWords: any[];
   onExit: () => void;
+  deckId?: number;
 }
 
-const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
+const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit, deckId }) => {
   const [queue, setQueue] = useState<any[]>([]);
   const [currentWord, setCurrentWord] = useState<any | null>(null);
   const [mcqOptions, setMcqOptions] = useState<any[]>([]);
@@ -65,6 +66,11 @@ const SurvivalMode: React.FC<SurvivalModeProps> = ({ allWords, onExit }) => {
   const loadNextWord = (currentQueue: any[]) => {
     if (currentQueue.length === 0) {
       setVictory(true);
+      if (deckId) {
+        import('../../api/queries').then(({ recordSurvivalWin }) => {
+          recordSurvivalWin(deckId).catch(err => console.error("Failed to record win", err));
+        });
+      }
       return;
     }
     const nextWord = currentQueue[0];

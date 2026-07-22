@@ -32,7 +32,7 @@ const StudyView: React.FC = () => {
   }
 
   if (mode === 'srs') return <SrsMode allWords={allWords} onExit={() => setMode('selection')} />;
-  if (mode === 'survival') return <SurvivalMode allWords={allWords} onExit={() => setMode('selection')} />;
+  if (mode === 'survival') return <SurvivalMode allWords={allWords} deckId={deckIdNum} onExit={() => setMode('selection')} />;
 
   // Mode Selection View
   return (
