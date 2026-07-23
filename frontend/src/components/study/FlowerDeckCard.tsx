@@ -221,16 +221,9 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
     } else {
       let timeRemaining = "";
       if (nextWitherAt) {
-        const diffMs = nextWitherAt.getTime() - now.getTime();
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        if (diffDays > 0) {
-          timeRemaining = `(Héo sau ${diffDays} ngày)`;
-        } else if (diffHours > 0) {
-          timeRemaining = `(Héo sau ${diffHours} giờ)`;
-        } else {
-          timeRemaining = `(Sắp héo)`;
-        }
+        const timeStr = nextWitherAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = nextWitherAt.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        timeRemaining = `${timeStr} ${dateStr}`;
       }
 
       return (
