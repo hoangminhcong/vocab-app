@@ -220,10 +220,16 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
       );
     } else {
       let timeRemaining = "";
+      let isWitherToday = false;
       if (nextWitherAt) {
         const timeStr = nextWitherAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         const dateStr = nextWitherAt.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
         timeRemaining = `${timeStr} ${dateStr}`;
+        
+        isWitherToday = 
+          nextWitherAt.getDate() === now.getDate() &&
+          nextWitherAt.getMonth() === now.getMonth() &&
+          nextWitherAt.getFullYear() === now.getFullYear();
       }
 
       return (
@@ -235,6 +241,7 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
             Đã nở
           </div>
           {timeRemaining && <div className="text-[10px] text-[#7a726d] font-semibold">{timeRemaining}</div>}
+          {isWitherToday && <div className="text-[10px] text-[#e89c1e] font-bold">(Phải tưới hôm nay)</div>}
         </div>
       );
     }
