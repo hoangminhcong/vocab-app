@@ -53,7 +53,7 @@ async def import_vocabularies(
                             'english_word': parts[0].strip(),
                             'ipa': parts[1].strip(),
                             'vi_meaning': parts[2].strip(),
-                            'en_meaning': parts[3].strip() if len(parts) > 3 else None
+                            'synonyms': parts[3].strip() if len(parts) > 3 else None
                         })
                     elif len(parts) == 2:
                         data.append({
@@ -83,6 +83,7 @@ async def import_vocabularies(
                 ipa=str(row.get('ipa', '')) if row.get('ipa') else None,
                 part_of_speech=str(row.get('part_of_speech', '')) if row.get('part_of_speech') else None,
                 en_meaning=str(row.get('en_meaning', '')) if row.get('en_meaning') else None,
+                synonyms=str(row.get('synonyms', '')) if row.get('synonyms') else None,
                 example=str(row.get('example', '')) if row.get('example') else None,
                 difficulty=int(row.get('difficulty', 1)) if row.get('difficulty') else 1,
                 tags=str(row.get('tags', '')) if row.get('tags') else None,
