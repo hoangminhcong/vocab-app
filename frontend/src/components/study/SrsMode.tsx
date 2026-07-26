@@ -340,11 +340,11 @@ const SrsMode: React.FC<SrsModeProps> = ({ allWords, onExit }) => {
             {level === 1 && currentWord.part_of_speech && (
               <span className="text-[#3c3028] text-2xl mb-4 opacity-80 font-bold">({currentWord.part_of_speech})</span>
             )}
+            {(level === 0 || level === 1) && currentWord.ipa && (
+              <p className="text-[#5e544d] font-mono text-xl font-bold mt-1 mb-4">{currentWord.ipa}</p>
+            )}
             {level === 0 && (
-              <>
-                {currentWord.ipa && <p className="text-[#5e544d] font-mono text-xl font-bold mt-1 mb-4">{currentWord.ipa}</p>}
-                <p className="text-2xl font-bold text-[#3c3028] mt-2 mb-4">{currentWord.vi_meaning}</p>
-              </>
+              <p className="text-2xl font-bold text-[#3c3028] mt-2 mb-4">{currentWord.vi_meaning}</p>
             )}
 
             {/* Synonyms Pill */}
