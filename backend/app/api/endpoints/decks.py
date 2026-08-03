@@ -139,23 +139,20 @@ def record_survival_win(
             if deck.survival_wins >= 2:
                 deck.wither_stage = 1
                 deck.next_wither_at = now + datetime.timedelta(days=1)
-        # Stages 1-5: Withered phases
+        # Stages 1+: Withered phases
         else:
             # Check if it was actually withered
             # If next_wither_at is in the past, they successfully rescued the flower
             if deck.next_wither_at and now >= deck.next_wither_at:
-                if deck.wither_stage == 1:
-                    deck.wither_stage = 2
-                    deck.next_wither_at = now + datetime.timedelta(days=3)
-                elif deck.wither_stage == 2:
-                    deck.wither_stage = 3
-                    deck.next_wither_at = now + datetime.timedelta(days=7)
-                elif deck.wither_stage == 3:
-                    deck.wither_stage = 4
-                    deck.next_wither_at = now + datetime.timedelta(days=15)
-                elif deck.wither_stage >= 4:
-                    deck.wither_stage = 5
-                    deck.next_wither_at = now + datetime.timedelta(days=30)
+                deck.wither_stage = 2
+                
+                # Calculate 7 AM on the 3rd day in Vietnam Time (UTC+7)
+                vn_tz = datetime.timezone(datetime.timedelta(hours=7))
+                now_vn = now.astimezone(vn_tz)
+                next_date_vn = now_vn + datetime.timedelta(days=3)
+                next_wither_vn = next_date_vn.replace(hour=7, minute=0, second=0, microsecond=0)
+                
+                deck.next_wither_at = next_wither_vn
     
     db.add(deck)
     db.commit()
