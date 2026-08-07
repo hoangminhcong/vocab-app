@@ -15,6 +15,11 @@ export const getDecks = async (folderId: number) => {
   return data;
 };
 
+export const getWitheredDecks = async () => {
+  const { data } = await api.get(`/decks/withered`);
+  return data;
+};
+
 export const createDeck = async (folderId: number, title: string, description: string) => {
   const { data } = await api.post(`/decks/folder/${folderId}`, { title, description });
   return data;

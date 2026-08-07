@@ -34,6 +34,34 @@ def read_decks_by_folder(
         
     return decks
 
+@router.get("/withered", response_model=List[Deck])
+def get_withered_decks(
+    *,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    import datetime
+    now = datetime.datetime.now(datetime.timezone.utc)
+    
+    # Query decks that have next_wither_at in the past, belonging to the current user
+    decks = db.query(DeckModel).join(FolderModel).filter(
+        FolderModel.user_id == current_user.id,
+        DeckModel.next_wither_at != None,
+        DeckModel.next_wither_at < now
+    ).all()
+    
+    # Calculate learned_words for each deck so response model doesn't complain
+    from app.models.vocabulary import Vocabulary
+    from app.models.study_progress import StudyProgress
+    for d in decks:
+        learned = db.query(Vocabulary).join(StudyProgress).filter(
+            Vocabulary.deck_id == d.id,
+            StudyProgress.level >= 4
+        ).count()
+        d.learned_words = learned
+        
+    return decks
+
 @router.post("/folder/{folder_id}", response_model=Deck)
 def create_deck(
     *,

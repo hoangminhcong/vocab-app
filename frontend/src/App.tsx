@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import DeckView from './pages/DeckView';
 import StudyView from './pages/StudyView';
+import WitheredPlantsWidget from './components/study/WitheredPlantsWidget';
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
   
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <WitheredPlantsWidget />
+    </>
+  );
 };
 
 function App() {
