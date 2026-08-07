@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import DeckView from './pages/DeckView';
 import StudyView from './pages/StudyView';
 import WitheredPlantsWidget from './components/study/WitheredPlantsWidget';
+import MissedWateringLog from './components/study/MissedWateringLog';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     <>
       {children}
       <WitheredPlantsWidget />
+      <MissedWateringLog />
     </>
   );
 };

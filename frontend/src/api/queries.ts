@@ -20,6 +20,11 @@ export const getWitheredDecks = async () => {
   return data;
 };
 
+export const getMissedWaterings = async () => {
+  const { data } = await api.get(`/decks/missed-waterings`);
+  return data;
+};
+
 export const createDeck = async (folderId: number, title: string, description: string) => {
   const { data } = await api.post(`/decks/folder/${folderId}`, { title, description });
   return data;

@@ -6,6 +6,7 @@ from app.schemas.deck import Deck, DeckCreate, DeckUpdate
 from app.models.deck import Deck as DeckModel
 from app.models.folder import Folder as FolderModel
 from app.models.user import User
+from app.models.missed_watering import MissedWateringLog
 
 router = APIRouter()
 
@@ -50,6 +51,31 @@ def get_withered_decks(
         DeckModel.next_wither_at < now
     ).all()
     
+    # Auto-record missed waterings
+    vn_tz = datetime.timezone(datetime.timedelta(hours=7))
+    now_vn = now.astimezone(vn_tz)
+    
+    for deck in decks:
+        wither_date = deck.next_wither_at.astimezone(vn_tz).date()
+        # If the day it withered is strictly before today in VN time, it's a missed watering
+        if wither_date < now_vn.date():
+            # Check if we already logged this missed day for this deck
+            existing_log = db.query(MissedWateringLog).filter(
+                MissedWateringLog.user_id == current_user.id,
+                MissedWateringLog.deck_id == deck.id,
+                MissedWateringLog.date == wither_date
+            ).first()
+            
+            if not existing_log:
+                new_log = MissedWateringLog(
+                    user_id=current_user.id,
+                    deck_id=deck.id,
+                    deck_title=deck.title,
+                    date=wither_date
+                )
+                db.add(new_log)
+    db.commit()
+    
     # Calculate learned_words for each deck so response model doesn't complain
     from app.models.vocabulary import Vocabulary
     from app.models.study_progress import StudyProgress
@@ -61,6 +87,38 @@ def get_withered_decks(
         d.learned_words = learned
         
     return decks
+
+@router.get("/missed-waterings")
+def get_missed_waterings(
+    *,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    # Fetch all missed waterings for user
+    logs = db.query(MissedWateringLog).filter(
+        MissedWateringLog.user_id == current_user.id
+    ).order_by(MissedWateringLog.date.desc()).all()
+    
+    # Group by date
+    grouped = {}
+    for log in logs:
+        date_str = log.date.isoformat()
+        if date_str not in grouped:
+            grouped[date_str] = []
+        grouped[date_str].append({
+            "id": log.id,
+            "deck_id": log.deck_id,
+            "deck_title": log.deck_title
+        })
+        
+    result = []
+    for date_str, items in grouped.items():
+        result.append({
+            "date": date_str,
+            "decks": items
+        })
+        
+    return result
 
 @router.post("/folder/{folder_id}", response_model=Deck)
 def create_deck(

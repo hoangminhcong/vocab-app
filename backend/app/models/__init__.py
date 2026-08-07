@@ -4,3 +4,4 @@ from app.models.deck import Deck
 from app.models.vocabulary import Vocabulary
 from app.models.study_progress import StudyProgress
 from app.models.learning_session import LearningSession
+from app.models.missed_watering import MissedWateringLog
