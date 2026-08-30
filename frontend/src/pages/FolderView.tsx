@@ -51,7 +51,7 @@ const FolderView: React.FC = () => {
   });
 
   const updateDeckMutation = useMutation({
-    mutationFn: ({ id, title }: { id: number, title: string }) => updateDeck(id, { title }),
+    mutationFn: ({ id, ...data }: { id: number, title?: string, next_wither_at?: string }) => updateDeck(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['decks', folderIdNum] });
     }
@@ -59,6 +59,10 @@ const FolderView: React.FC = () => {
 
   const handleUpdateDeckTitle = (id: number, newTitle: string) => {
     updateDeckMutation.mutate({ id, title: newTitle });
+  };
+
+  const handleUpdateWitherDate = (id: number, newDate: string) => {
+    updateDeckMutation.mutate({ id, next_wither_at: newDate });
   };
 
   const handleDeleteDeck = (id: number) => {
@@ -104,6 +108,7 @@ const FolderView: React.FC = () => {
                   handleDeleteDeck(deck.id);
                 }}
                 onTitleChange={(newTitle) => handleUpdateDeckTitle(deck.id, newTitle)}
+                onWitherDateChange={(newDate) => handleUpdateWitherDate(deck.id, newDate)}
               />
             </div>
           ))}

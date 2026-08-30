@@ -6,10 +6,11 @@ interface FlowerDeckCardProps {
   onClick: () => void;
   onDelete?: (e: React.MouseEvent) => void;
   onTitleChange?: (newTitle: string) => void;
+  onWitherDateChange?: (newDate: string) => void;
   index: number;
 }
 
-export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onDelete, onTitleChange, index }) => {
+export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, onDelete, onTitleChange, onWitherDateChange, index }) => {
   const srsPercent = deck.total_words > 0 ? (deck.learned_words || 0) / deck.total_words : 0;
   const survivalWins = deck.survival_wins || 0;
   const nextWitherAt = deck.next_wither_at ? new Date(deck.next_wither_at) : null;
@@ -35,6 +36,7 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState(deck.title);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEditingTitle && inputRef.current) {
@@ -313,8 +315,43 @@ export const FlowerDeckCard: React.FC<FlowerDeckCardProps> = ({ deck, onClick, o
         </div>
       )}
 
+      {/* Hidden date input for wither date picker */}
+      {onWitherDateChange && (
+        <input
+          ref={dateInputRef}
+          type="datetime-local"
+          className="sr-only"
+          style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }}
+          onChange={(e) => {
+            if (e.target.value) {
+              onWitherDateChange(new Date(e.target.value).toISOString());
+            }
+          }}
+          value={deck.next_wither_at ? new Date(deck.next_wither_at).toISOString().slice(0, 16) : ''}
+        />
+      )}
+
       {/* Action Buttons */}
       <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
+        {onWitherDateChange && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (dateInputRef.current) {
+                dateInputRef.current.showPicker();
+              }
+            }}
+            className="p-2 bg-white rounded-full shadow-md text-[#1cb0f6] hover:bg-blue-50 transition-colors border border-blue-100"
+            title="Chỉnh ngày héo"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </button>
+        )}
         {onDelete && (
           <button 
             onClick={onDelete}

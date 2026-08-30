@@ -15,6 +15,11 @@ export const getDecks = async (folderId: number) => {
   return data;
 };
 
+export const getDeck = async (deckId: number) => {
+  const { data } = await api.get(`/decks/${deckId}`);
+  return data;
+};
+
 export const getWitheredDecks = async () => {
   const { data } = await api.get(`/decks/withered`);
   return data;

@@ -12,6 +12,7 @@ class DeckCreate(DeckBase):
 
 class DeckUpdate(DeckBase):
     title: Optional[str] = None
+    next_wither_at: Optional[datetime] = None
 
 class DeckInDBBase(DeckBase):
     id: int

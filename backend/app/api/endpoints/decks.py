@@ -232,10 +232,10 @@ def record_survival_win(
             if deck.next_wither_at and now >= deck.next_wither_at:
                 deck.wither_stage = 2
                 
-                # Calculate 7 AM on the 3rd day in Vietnam Time (UTC+7)
+                # Calculate 7 AM on the 5th day in Vietnam Time (UTC+7)
                 vn_tz = datetime.timezone(datetime.timedelta(hours=7))
                 now_vn = now.astimezone(vn_tz)
-                next_date_vn = now_vn + datetime.timedelta(days=3)
+                next_date_vn = now_vn + datetime.timedelta(days=5)
                 next_wither_vn = next_date_vn.replace(hour=7, minute=0, second=0, microsecond=0)
                 
                 deck.next_wither_at = next_wither_vn

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getVocabularies, updateVocabulary, deleteVocabulary } from '../api/queries';
+import { getVocabularies, updateVocabulary, deleteVocabulary, getDeck, updateDeck } from '../api/queries';
 import api from '../api/axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,6 +60,18 @@ const DeckView: React.FC = () => {
   const queryClient = useQueryClient();
   const deckIdNum = parseInt(deckId || '0', 10);
   const [isScanning, setIsScanning] = useState(false);
+  const dateInputRef = React.useRef<HTMLInputElement>(null);
+
+  const { data: deck, isLoading: isLoadingDeck } = useQuery({
+    queryKey: ['deck', deckIdNum],
+    queryFn: () => getDeck(deckIdNum),
+    enabled: !!deckIdNum
+  });
+
+  const updateDeckMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: any }) => updateDeck(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['deck', deckIdNum] })
+  });
 
   const getShortPos = (pos: string | null | undefined) => {
     if (!pos) return null;
@@ -167,7 +179,7 @@ const DeckView: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-xl font-bold text-[#7a726d]" style={{ backgroundColor: '#fdfaf3' }}>Đang tải...</div>;
+  if (isLoading || isLoadingDeck) return <div className="min-h-screen flex items-center justify-center text-xl font-bold text-[#7a726d]" style={{ backgroundColor: '#fdfaf3' }}>Đang tải...</div>;
 
   return (
     <div className="min-h-screen p-4 sm:p-8" style={{ backgroundColor: '#fdfaf3' }}>
@@ -182,13 +194,41 @@ const DeckView: React.FC = () => {
               <p className="text-[#7a726d] font-bold mt-1 text-sm sm:text-base">{vocabularies?.length || 0} từ trong bộ bài này</p>
             </div>
           </div>
-          <button
-            onClick={() => navigate(`/study/${deckIdNum}`)}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-xl uppercase tracking-wider text-white shadow-sm transition-all hover:brightness-105 active:translate-y-1 flex items-center justify-center gap-2 shrink-0"
-            style={{ backgroundColor: '#1cb0f6', borderBottom: '4px solid #1899d6' }}
-          >
-            <Play className="w-5 h-5 fill-current" /> Study Now
-          </button>
+          <div className="flex gap-3 w-full sm:w-auto">
+            <input
+              ref={dateInputRef}
+              type="datetime-local"
+              className="sr-only"
+              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }}
+              onChange={(e) => {
+                if (e.target.value && deck) {
+                  updateDeckMutation.mutate({ id: deck.id, data: { next_wither_at: new Date(e.target.value).toISOString() } });
+                }
+              }}
+              value={deck?.next_wither_at ? new Date(deck.next_wither_at).toISOString().slice(0, 16) : ''}
+            />
+            <button
+              onClick={() => {
+                if (dateInputRef.current) dateInputRef.current.showPicker();
+              }}
+              className="px-4 py-4 rounded-2xl text-[#1cb0f6] bg-white border-2 border-[#e5e5e5] hover:bg-blue-50 transition-colors shadow-sm flex items-center justify-center shrink-0"
+              title="Chỉnh ngày héo"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </button>
+            <button
+              onClick={() => navigate(`/study/${deckIdNum}`)}
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-xl uppercase tracking-wider text-white shadow-sm transition-all hover:brightness-105 active:translate-y-1 flex items-center justify-center gap-2 shrink-0"
+              style={{ backgroundColor: '#1cb0f6', borderBottom: '4px solid #1899d6' }}
+            >
+              <Play className="w-5 h-5 fill-current" /> Study Now
+            </button>
+          </div>
         </header>
 
         <div className="grid lg:grid-cols-4 gap-8 items-start">
